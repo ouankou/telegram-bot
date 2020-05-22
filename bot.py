@@ -6,6 +6,7 @@ import requests
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['BOT_TOKEN']
 ADDRESS = os.environ['BOT_ADDRESS']
+ALLOWED_USER = os.environ['ALLOWED_USER']
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -50,7 +51,7 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("start", start, Filters.user(username=ALLOWED_USER)))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("rose", rose))
 
