@@ -3,6 +3,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
 import requests
 import owncloud
+from youtube_dl import YoutubeDL
 
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['BOT_TOKEN']
@@ -50,6 +51,21 @@ def nclink(update, context):
 
     update.message.reply_text(sharingLink)
 
+def ncdownload(update, context):
+    """Echo the user message."""
+    fileLink = "https://www.youtube.com/watch?v=-7MlA_kYP_4"
+    YoutubeDL({}).download([fileLink])
+    allfiles = os.listdir('.')
+    files = [ fname for fname in allfiles if fname.endswith('.mp4')]
+    print(files[0])
+
+    oc = owncloud.Client(NEXTCLOUD_URL)
+    oc.login(NEXTCLOUD_USERNAME, NEXTCLOUD_PASSWORD)
+    oc.put_file('Documents/' + files[0], files[0])
+    os.remove(files[0])
+
+    update.message.reply_text(files[0])
+
 def echo(update, context):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
@@ -73,6 +89,7 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("rose", rose))
     dp.add_handler(CommandHandler("nclink", nclink))
+    dp.add_handler(CommandHandler("ncdownload", ncdownload))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
