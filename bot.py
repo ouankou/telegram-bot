@@ -37,6 +37,13 @@ def rose(update, context):
 
     update.message.reply_text(roseReleaseCommit)
 
+def ncStart(update, context):
+    """Send a message when the command /nc is issued."""
+
+    update.message.reply_text("Please provide a valid YouTube link, or reply with \exit to return.")
+
+    return YOUTUBE
+
 def nclink(update, context):
     """Send a message when the command /nclink is issued."""
     oc = owncloud.Client(NEXTCLOUD_URL)
@@ -51,9 +58,9 @@ def nclink(update, context):
 
     update.message.reply_text(sharingLink)
 
-def ncdownload(update, context):
-    """Echo the user message."""
-    fileLink = "https://www.youtube.com/watch?v=-7MlA_kYP_4"
+def ncYouTube(update, context):
+    """Send a message when a YouTube link is provided."""
+    fileLink = update.message.youtube
     YoutubeDL({}).download([fileLink])
     allfiles = os.listdir('.')
     files = [ fname for fname in allfiles if fname.endswith('.mp4')]
@@ -65,6 +72,13 @@ def ncdownload(update, context):
     os.remove(files[0])
 
     update.message.reply_text(files[0])
+
+def ncExit(update, context):
+    """Send a message when the command /exit is issued."""
+
+    update.message.reply_text("Sayonara!")
+
+    return ConversationHandler.END
 
 def echo(update, context):
     """Echo the user message."""
@@ -89,8 +103,17 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("rose", rose))
     dp.add_handler(CommandHandler("nclink", nclink))
-    dp.add_handler(CommandHandler("ncdownload", ncdownload))
 
+    ncConvHandler = ConversationHandler(
+            entry_points = [CommandHandler('nc', ncStart)],
+            
+            states = {
+                YOUTUBE: [MessageHandler(Filters.youtube, ncYouTube),
+                    CommandHandler('exit', ncExit)], 
+            },
+
+            fallbacks=[CommandHandler('exit', ncExit)]
+    )
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
 
