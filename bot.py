@@ -39,7 +39,7 @@ def rose(update, context):
 
     update.message.reply_text(roseReleaseCommit)
 
-def ncYoutube(update, context):
+def ncYouTube(update, context):
     """Send a message when the command /ncytb is issued."""
 
     update.message.reply_text("Please provide a valid YouTube link.")
