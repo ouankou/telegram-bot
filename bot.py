@@ -63,17 +63,20 @@ def nclink(update, context):
 def ncYouTube(update, context):
     """Send a message when a YouTube link is provided."""
     fileLink = update.message.youtube
-    YoutubeDL({}).download([fileLink])
-    allfiles = os.listdir('.')
-    files = [ fname for fname in allfiles if fname.endswith('.mp4')]
-    print(files[0])
+    res = YoutubeDL({}).download([fileLink])
+    if (res == 0):
+        allfiles = os.listdir('.')
+        files = [ fname for fname in allfiles if fname.endswith('.mp4')]
+        print(files[0])
 
-    oc = owncloud.Client(NEXTCLOUD_URL)
-    oc.login(NEXTCLOUD_USERNAME, NEXTCLOUD_PASSWORD)
-    oc.put_file('Documents/' + files[0], files[0])
-    os.remove(files[0])
+        oc = owncloud.Client(NEXTCLOUD_URL)
+        oc.login(NEXTCLOUD_USERNAME, NEXTCLOUD_PASSWORD)
+        oc.put_file('Documents/' + files[0], files[0])
+        os.remove(files[0])
 
-    update.message.reply_text(files[0])
+        update.message.reply_text(files[0])
+    else:
+        update.message.reply_text("Downloading failed!")
 
 def ncExit(update, context):
     """Send a message when the command /exit is issued."""
@@ -116,6 +119,9 @@ def main():
 
             fallbacks=[CommandHandler('exit', ncExit)]
     )
+
+    dp.add_handler(ncConvHandler)
+
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
 
