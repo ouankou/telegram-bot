@@ -39,10 +39,10 @@ def rose(update, context):
 
     update.message.reply_text(roseReleaseCommit)
 
-def ncStart(update, context):
-    """Send a message when the command /nc is issued."""
+def ncYoutube(update, context):
+    """Send a message when the command /ncytb is issued."""
 
-    update.message.reply_text("Please provide a valid YouTube link, or reply with /exit to return.")
+    update.message.reply_text("Please provide a valid YouTube link.")
 
     return YOUTUBE
 
@@ -60,14 +60,13 @@ def nclink(update, context):
 
     update.message.reply_text(sharingLink)
 
-def ncYouTube(update, context):
+def downloadYouTube(update, context):
     """Send a message when a YouTube link is provided."""
     fileLink = update.message.text
     res = YoutubeDL({}).download([fileLink])
     if (res == 0):
         allfiles = os.listdir('.')
         files = [ fname for fname in allfiles if fname.endswith('.mp4')]
-        print(files[0])
 
         oc = owncloud.Client(NEXTCLOUD_URL)
         oc.login(NEXTCLOUD_USERNAME, NEXTCLOUD_PASSWORD)
@@ -78,7 +77,7 @@ def ncYouTube(update, context):
     else:
         update.message.reply_text("Downloading failed!")
 
-    return YOUTUBE
+    return ConversationHandler.END
 
 def ncExit(update, context):
     """Send a message when the command /exit is issued."""
@@ -111,18 +110,16 @@ def main():
     dp.add_handler(CommandHandler("rose", rose))
     dp.add_handler(CommandHandler("nclink", nclink))
 
-    ncConvHandler = ConversationHandler(
-            entry_points = [CommandHandler('nc', ncStart)],
-            
+    ncYouTubeConvHandler = ConversationHandler(
+            entry_points = [CommandHandler('ncytb', ncYouTube)],
             states = {
-                YOUTUBE: [MessageHandler(Filters.text, ncYouTube),
+                YOUTUBE: [MessageHandler(Filters.text, downloadYouTube),
                     CommandHandler('exit', ncExit)], 
             },
-
             fallbacks=[CommandHandler('exit', ncExit)]
     )
 
-    dp.add_handler(ncConvHandler)
+    dp.add_handler(ncYouTubeConvHandler)
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
