@@ -62,7 +62,7 @@ def nclink(update, context):
 
 def ncYouTube(update, context):
     """Send a message when a YouTube link is provided."""
-    fileLink = update.message.youtube
+    fileLink = update.message.text
     res = YoutubeDL({}).download([fileLink])
     if (res == 0):
         allfiles = os.listdir('.')
@@ -113,7 +113,7 @@ def main():
             entry_points = [CommandHandler('nc', ncStart)],
             
             states = {
-                YOUTUBE: [MessageHandler(Filters.youtube, ncYouTube),
+                YOUTUBE: [MessageHandler(Filters.text, ncYouTube),
                     CommandHandler('exit', ncExit)], 
             },
 
