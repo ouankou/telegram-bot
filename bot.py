@@ -78,7 +78,7 @@ def downloadYouTube(update, context):
     except:
         update.message.reply_text("Downloading failed!")
 
-    return YOUTUBE
+    return ConversationHandler.END
 
 def ncExit(update, context):
     """Send a message when the command /exit is issued."""
