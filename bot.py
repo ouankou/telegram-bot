@@ -71,6 +71,9 @@ def ncls(update, context):
     for u in fileList:
         res += u.get_name() + '\n'
 
+    if (res == ''):
+        res = 'The folder is empty.'
+
     update.message.reply_text(res)
 
 def ncrm(update, context):
@@ -84,6 +87,9 @@ def ncrm(update, context):
     for u in fileList:
         oc.delete(u.get_path() + '/' + u.get_name())
         res += u.get_name() + ' has been removed.\n'
+
+    if (res == ''):
+        res = 'The folder is empty.'
 
     update.message.reply_text(res)
 
@@ -166,10 +172,11 @@ def main():
     dp.add_error_handler(error)
 
     # Start the Bot
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(PORT),
-                          url_path=TOKEN)
-    updater.bot.setWebhook(ADDRESS + TOKEN)
+    #updater.start_webhook(listen="0.0.0.0",
+    #                      port=int(PORT),
+    #                      url_path=TOKEN)
+    #updater.bot.setWebhook(ADDRESS + TOKEN)
+    updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
