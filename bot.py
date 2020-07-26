@@ -42,7 +42,7 @@ def rose(update, context):
 def ncYouTube(update, context):
     """Send a message when the command /ncytb is issued."""
 
-    update.message.reply_text("Please provide a valid YouTube link.")
+    update.message.reply_text("Please provide a valid YouTube link or send /exit to return.")
 
     return YOUTUBE
 
@@ -63,8 +63,9 @@ def nclink(update, context):
 def downloadYouTube(update, context):
     """Send a message when a YouTube link is provided."""
     fileLink = update.message.text
-    res = YoutubeDL({}).download([fileLink])
-    if (res == 0):
+    try:
+        YoutubeDL({}).download([fileLink])
+
         allfiles = os.listdir('.')
         files = [ fname for fname in allfiles if fname.endswith('.mp4')]
 
@@ -74,10 +75,10 @@ def downloadYouTube(update, context):
         os.remove(files[0])
 
         update.message.reply_text(files[0])
-    else:
+    except:
         update.message.reply_text("Downloading failed!")
 
-    return ConversationHandler.END
+    return YOUTUBE
 
 def ncExit(update, context):
     """Send a message when the command /exit is issued."""
