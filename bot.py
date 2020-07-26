@@ -42,7 +42,7 @@ def rose(update, context):
 def ncYouTube(update, context):
     """Send a message when the command /ncytb is issued."""
 
-    update.message.reply_text("Please provide a valid YouTube link or send /exit to return.")
+    update.message.reply_text("Please provide a valid YouTube link or send /return to return.")
 
     return YOUTUBE
 
@@ -59,6 +59,33 @@ def nclink(update, context):
         sharingLink = link_info.get_link()
 
     update.message.reply_text(sharingLink)
+
+def ncls(update, context):
+    """Send a message when the command /ncls is issued."""
+    oc = owncloud.Client(NEXTCLOUD_URL)
+    oc.login(NEXTCLOUD_USERNAME, NEXTCLOUD_PASSWORD)
+
+    res = ''
+
+    fileList = oc.list('Documents')
+    for u in fileList:
+        res += u.get_name() + '\n'
+
+    update.message.reply_text(res)
+
+def ncrm(update, context):
+    """Send a message when the command /ncrm is issued."""
+    oc = owncloud.Client(NEXTCLOUD_URL)
+    oc.login(NEXTCLOUD_USERNAME, NEXTCLOUD_PASSWORD)
+
+    res = ''
+
+    fileList = oc.list('Documents')
+    for u in fileList:
+        oc.delete(u.get_path() + '/' + u.get_name())
+        res += u.get_name() + ' has been removed.\n'
+
+    update.message.reply_text(res)
 
 def downloadYouTube(update, context):
     """Send a message when a YouTube link is provided."""
@@ -80,12 +107,20 @@ def downloadYouTube(update, context):
 
     return ConversationHandler.END
 
-def ncExit(update, context):
+def ncReturn(update, context):
+    """Send a message when the command /return is issued."""
+
+    update.message.reply_text("Sayonara!")
+
+    return ConversationHandler.END
+
+def exit(update, context):
     """Send a message when the command /exit is issued."""
 
     update.message.reply_text("Sayonara!")
 
     return ConversationHandler.END
+
 
 def echo(update, context):
     """Echo the user message."""
@@ -110,14 +145,16 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("rose", rose))
     dp.add_handler(CommandHandler("nclink", nclink))
+    dp.add_handler(CommandHandler("ncls", ncls))
+    dp.add_handler(CommandHandler("ncrm", ncrm))
 
     ncYouTubeConvHandler = ConversationHandler(
             entry_points = [CommandHandler('ncytb', ncYouTube)],
             states = {
                 YOUTUBE: [MessageHandler(Filters.text, downloadYouTube),
-                    CommandHandler('exit', ncExit)], 
+                    CommandHandler('return', ncReturn)], 
             },
-            fallbacks=[CommandHandler('exit', ncExit)]
+            fallbacks=[CommandHandler('exit', exit)]
     )
 
     dp.add_handler(ncYouTubeConvHandler)
