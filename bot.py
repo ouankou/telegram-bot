@@ -42,7 +42,7 @@ def rose(update, context):
 def ncStart(update, context):
     """Send a message when the command /nc is issued."""
 
-    update.message.reply_text("Please provide a valid YouTube link, or reply with \exit to return.")
+    update.message.reply_text("Please provide a valid YouTube link, or reply with /exit to return.")
 
     return YOUTUBE
 
@@ -77,6 +77,8 @@ def ncYouTube(update, context):
         update.message.reply_text(files[0])
     else:
         update.message.reply_text("Downloading failed!")
+
+    return YOUTUBE
 
 def ncExit(update, context):
     """Send a message when the command /exit is issued."""
